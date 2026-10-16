@@ -1,4 +1,4 @@
-# Dashboard personal de ventas
+# Dashboard ventas
 
 Aplicación web personal para visualizar y comparar las ventas de tres productos
 durante enero y febrero. Incluye gráficos interactivos basados en Google Charts
