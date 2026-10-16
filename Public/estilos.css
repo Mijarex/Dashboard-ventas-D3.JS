@@ -1,0 +1,28 @@
+/* Aplica colores y tipografía generales y simplifica el cálculo de tamaños. */
+* { box-sizing: border-box; }
+body { margin: 0; background: #f3f6fa; color: #18324a;
+       font-family: Arial, sans-serif; }
+.contenedor { max-width: 1100px; margin: auto; padding: 24px; }
+
+/* Ordena el encabezado y separa visualmente cada gráfico en su panel. */
+header { display: flex; justify-content: space-between;
+         align-items: center; gap: 16px; flex-wrap: wrap; }
+h1 { margin-bottom: 4px; }
+.panel { background: white; padding: 22px; border-radius: 14px;
+         margin-top: 20px; box-shadow: 0 2px 10px #00000010; }
+button, select { padding: 10px 14px; border-radius: 8px;
+                 border: 1px solid #aab8c7; cursor: pointer; }
+button { background: #185a9d; color: white; border: 0; }
+
+/* Mantiene los gráficos legibles y evita que el SVG desborde su panel. */
+#graficoGoogle { width: 100%; min-height: 360px; }
+#graficoD3 { width: 100%; overflow-x: auto; }
+.tooltip { position: absolute; pointer-events: none;
+           background: #172b43; color: white; padding: 9px;
+           border-radius: 6px; font-size: 13px; opacity: 0; }
+
+/* Reduce el espaciado en pantallas pequeñas para dar más sitio al contenido. */
+@media (max-width: 600px) {
+  .contenedor { padding: 12px; }
+  .panel { padding: 12px; }
+}

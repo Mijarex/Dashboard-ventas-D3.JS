@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard de ventas</title>
+  <link rel="stylesheet" href="estilos.css">
+  <script src="https://www.gstatic.com/charts/loader.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main class="contenedor">
+    <!-- Título del proyecto y control para volver a cargar las ventas. -->
+    <header>
+      <div><h1>Dashboard de ventas</h1>
+      <p>Enero y febrero · Tres productos</p></div>
+      <button id="actualizar">Actualizar</button>
+    </header>
+
+    <!-- Región accesible que informa de la carga, errores y selecciones. -->
+    <p id="estado" role="status">Cargando datos…</p>
+
+    <!-- Google Charts compara las unidades vendidas por producto y mes. -->
+    <section class="panel">
+      <h2>Ventas mensuales producto por unidades</h2>
+      <div id="graficoGoogle" aria-label="Gráfico de ventas"></div>
+    </section>
+
+    <!-- D3.js presenta cada registro como una burbuja interactiva. -->
+    <section class="panel">
+      <h2>Comparación multidimensional (D3.js)</h2>
+      <label for="metrica">Eje vertical:</label>
+      <select id="metrica">
+        <option value="ventas">Ventas</option>
+        <option value="ingresos">Ingresos</option>
+      </select>
+      <div id="graficoD3"></div>
+      <p>Color = producto; eje X = mes; tamaño = ingresos.</p>
+    </section>
+  </main>
+</body>
+</html>
