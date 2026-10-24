@@ -28,10 +28,6 @@ enero a abril y las etiquetas de ventas y variación global.
 
 ![Dashboard ejecutándose con ventas como métrica vertical](./Public/captura-dashboard.png)
 
-**Ingresos como métrica vertical**
-
-![Dashboard ejecutándose con ingresos como métrica vertical](./Public/captura-ingresos.png)
-
 ## Tecnologías
 
 - **Node.js y Express:** servidor local de la aplicación.
