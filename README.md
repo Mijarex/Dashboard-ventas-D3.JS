@@ -1,14 +1,16 @@
 # Dashboard Ventas
 
 Aplicación web personal para visualizar y comparar las ventas de tres productos
-durante enero y febrero. Incluye gráficos interactivos basados en Google Charts
-y D3.js, y carga los datos de ejemplo desde un archivo JSON.
+durante enero, febrero, marzo y abril. Incluye gráficos interactivos basados en
+Google Charts y D3.js, y carga los datos de ejemplo desde un archivo JSON.
 
 **Repositorio:** [Mijarex/Dashboard-ventas-D3.JS](https://github.com/Mijarex/Dashboard-ventas-D3.JS)
 
 ## Funcionalidades
 
 - Compara las unidades vendidas de cada producto en un gráfico de columnas.
+- Muestra en amarillo la variación global de ventas frente al mes anterior,
+  con etiquetas en las barras.
 - Explora las ventas e ingresos mensuales mediante un gráfico de burbujas.
 - Cambia la métrica del eje vertical entre unidades vendidas e ingresos.
 - Consulta el detalle de un registro al pasar el puntero sobre su burbuja.
@@ -19,7 +21,8 @@ y D3.js, y carga los datos de ejemplo desde un archivo JSON.
 ## Capturas del dashboard en ejecución
 
 Resultados obtenidos al ejecutar la aplicación en `http://localhost:3001` con
-los seis registros incluidos en `Public/ventas.json`.
+los doce registros incluidos en `Public/ventas.json`. Las capturas muestran
+enero a abril y las etiquetas de ventas y variación global.
 
 **Ventas como métrica vertical**
 
@@ -79,8 +82,8 @@ npm start
 
 ## Datos de ejemplo
 
-Los registros están en [`Public/ventas.json`](Public/ventas.json). Cada objeto
-representa las ventas de un producto en un mes y contiene:
+Los doce registros están en [`Public/ventas.json`](Public/ventas.json). Cada
+objeto representa las ventas de un producto en un mes y contiene:
 
 | Campo | Descripción |
 | --- | --- |

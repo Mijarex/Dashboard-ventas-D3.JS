@@ -14,17 +14,20 @@
     <!-- Título del proyecto y control para volver a cargar las ventas. -->
     <header>
       <div><h1>Dashboard de ventas</h1>
-      <p>Enero y febrero · Tres productos</p></div>
+      <p>Enero a abril · Tres productos</p></div>
       <button id="actualizar">Actualizar</button>
     </header>
 
     <!-- Región accesible que informa de la carga, errores y selecciones. -->
     <p id="estado" role="status">Cargando datos…</p>
 
-    <!-- Google Charts compara las unidades vendidas por producto y mes. -->
+    <!-- Google Charts compara ventas por mes y producto. -->
     <section class="panel">
-      <h2>Ventas mensuales producto por unidades</h2>
-      <div id="graficoGoogle" aria-label="Gráfico de ventas"></div>
+      <h2>Ventas y variación mensual</h2>
+      <div id="graficoGoogle" aria-label="Gráfico de ventas y variación"></div>
+      <p>La barra amarilla muestra la variación global: suma del cambio de
+        ventas de todos los productos respecto al mes anterior. Enero no tiene
+        variación porque no hay un mes previo.</p>
     </section>
 
     <!-- D3.js presenta cada registro como una burbuja interactiva. -->
@@ -34,9 +37,12 @@
       <select id="metrica">
         <option value="ventas">Ventas</option>
         <option value="ingresos">Ingresos</option>
+        <option value="variacion">Variación mensual</option>
       </select>
       <div id="graficoD3"></div>
-      <p>Color = producto; eje X = mes; tamaño = ingresos.</p>
+      <p>Variación por producto = ventas del mes - ventas del mes anterior.
+        Enero no se grafica en esta métrica porque no tiene mes previo.
+        Color = producto; eje X = mes; tamaño = ingresos.</p>
     </section>
   </main>
 </body>

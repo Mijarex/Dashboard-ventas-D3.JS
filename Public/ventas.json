@@ -40,5 +40,47 @@
     "ventas": 70,
     "ingresos": 21000,
     "precio": 300
+  },
+  {
+    "producto": "Smartphone A",
+    "mes": "Marzo",
+    "ventas": 180,
+    "ingresos": 36000,
+    "precio": 200
+  },
+  {
+    "producto": "Smartphone B",
+    "mes": "Marzo",
+    "ventas": 100,
+    "ingresos": 20000,
+    "precio": 200
+  },
+  {
+    "producto": "Tablet X",
+    "mes": "Marzo",
+    "ventas": 80,
+    "ingresos": 24000,
+    "precio": 300
+  },
+  {
+    "producto": "Smartphone A",
+    "mes": "Abril",
+    "ventas": 200,
+    "ingresos": 40000,
+    "precio": 200
+  },
+  {
+    "producto": "Smartphone B",
+    "mes": "Abril",
+    "ventas": 110,
+    "ingresos": 22000,
+    "precio": 200
+  },
+  {
+    "producto": "Tablet X",
+    "mes": "Abril",
+    "ventas": 90,
+    "ingresos": 27000,
+    "precio": 300
   }
 ]

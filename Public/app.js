@@ -4,7 +4,7 @@ let metrica = "ventas";
 
 // Catálogos compartidos por las visualizaciones y la escala de colores.
 const productos = ["Smartphone A", "Smartphone B", "Tablet X"];
-const meses = ["Enero", "Febrero"];
+const meses = ["Enero", "Febrero", "Marzo", "Abril"];
 const colores = d3.scaleOrdinal()
   .domain(productos).range(["#2563eb", "#0d9488", "#d97706"]);
 // Espera la carga de Google Charts antes de intentar dibujar el gráfico.
@@ -21,26 +21,59 @@ async function cargarDatos() {
   if (!Array.isArray(datos)) throw new Error("JSON no es una lista");
   return datos;
 }
+
+function agregarVariaciones(datos) {
+  return datos.map(registro => {
+    const indiceMes = meses.indexOf(registro.mes);
+    const anterior = indiceMes > 0
+      ? datos.find(d => d.producto === registro.producto &&
+        d.mes === meses[indiceMes - 1])
+      : null;
+    return {
+      ...registro,
+      variacion: anterior
+        ? Number(registro.ventas) - Number(anterior.ventas)
+        : null
+    };
+  });
+}
  
-// Agrupa los registros por mes y crea el gráfico de columnas de Google Charts.
+// Dibuja ventas por producto y una sola barra amarilla de variación global.
 function dibujarGoogle() {
-  const filas = meses.map(mes => [
-    mes,
-    ...productos.map(producto => {
+  const tabla = new google.visualization.DataTable();
+  tabla.addColumn("string", "Mes");
+  productos.forEach(producto => {
+    tabla.addColumn("number", producto);
+    tabla.addColumn({ type: "string", role: "annotation" });
+  });
+  tabla.addColumn("number", "Variación global");
+  tabla.addColumn({ type: "string", role: "annotation" });
+  const filas = meses.map(mes => {
+    const ventas = productos.map(producto => {
       const item = registros.find(d =>
         d.mes === mes && d.producto === producto);
-      return item ? Number(item.ventas) : 0;
-    })
-  ]);
-  const tabla = google.visualization.arrayToDataTable([
-    ["Mes", ...productos], ...filas
-  ]);
+      return item ? [Number(item.ventas), String(item.ventas)] : [null, null];
+    });
+    const variacionGlobal = mes === meses[0] ? null :
+      registros.filter(d => d.mes === mes)
+        .reduce((total, d) => total + (Number(d.variacion) || 0), 0);
+    const etiquetaVariacion = variacionGlobal === null
+      ? null
+      : `${variacionGlobal > 0 ? "+" : ""}${variacionGlobal}`;
+    return [mes, ...ventas.flat(), variacionGlobal, etiquetaVariacion];
+  });
+  tabla.addRows(filas);
   const grafico = new google.visualization.ColumnChart(
     document.getElementById("graficoGoogle"));
   grafico.draw(tabla, {
-    title: "Ventas por mes y producto",
+    title: "Ventas por producto y variación global",
     legend: { position: "bottom" },
-    colors: productos.map(p => colores(p)),
+    colors: [...productos.map(producto => colores(producto)),
+      "#facc15"],
+    annotations: {
+      alwaysOutside: true,
+      textStyle: { color: "#18324a", fontSize: 12, bold: true }
+    },
     height: 360,
     chartArea: { width: "80%", height: "65%" },
     vAxis: { title: "Unidades vendidas", minValue: 0 },
@@ -55,8 +88,18 @@ function dibujarD3() {
   const margen = { top: 30, right: 25, bottom: 65, left: 80 };
   const x = d3.scalePoint().domain(meses)
     .range([margen.left + 100, ancho - margen.right - 100]);
-  const maxY = d3.max(registros, d => Number(d[metrica])) || 1;
-  const y = d3.scaleLinear().domain([0, maxY * 1.2])
+  const registrosVisibles = metrica === "variacion"
+    ? registros.filter(d => d.variacion !== null)
+    : registros;
+  const valoresY = registrosVisibles.map(d => Number(d[metrica]));
+  const minY = metrica === "variacion"
+    ? Math.min(0, d3.min(valoresY) || 0)
+    : 0;
+  const maxY = Math.max(0, d3.max(valoresY) || 0);
+  const margenY = metrica === "variacion"
+    ? (maxY - minY || 1) * 0.15
+    : (maxY || 1) * 0.2;
+  const y = d3.scaleLinear().domain([minY - margenY, maxY + margenY])
     .range([alto - margen.bottom, margen.top]);
 
   // El radio representa ingresos aunque el usuario cambie la métrica del eje Y.
@@ -67,6 +110,13 @@ function dibujarD3() {
     .data([null]).join("svg")
     .attr("viewBox", `0 0 ${ancho} ${alto}`)
     .style("width", "100%").style("height", "auto");
+  svg.selectAll(".lineaCero")
+    .data(metrica === "variacion" ? [null] : [])
+    .join("line")
+    .attr("class", "lineaCero")
+    .attr("x1", margen.left).attr("x2", ancho - margen.right)
+    .attr("y1", y(0)).attr("y2", y(0))
+    .attr("stroke", "#94a3b8").attr("stroke-dasharray", "4 4");
   svg.selectAll(".ejeX").data([null]).join("g")
     .attr("class", "ejeX")
     .attr("transform", `translate(0,${alto - margen.bottom})`)
@@ -77,7 +127,11 @@ function dibujarD3() {
     .transition().duration(600).call(d3.axisLeft(y));
   svg.selectAll(".tituloY").data([null]).join("text")
     .attr("class", "tituloY").attr("x", 12).attr("y", 20)
-    .text(metrica === "ventas" ? "Ventas (unidades)" : "Ingresos");
+    .text({
+      ventas: "Ventas (unidades)",
+      ingresos: "Ingresos",
+      variacion: "Variación mensual (unidades)"
+    }[metrica]);
 
   // Reutiliza un único tooltip y separa los productos del mismo mes.
   const tooltip = d3.select("body").selectAll(".tooltip")
@@ -85,7 +139,7 @@ function dibujarD3() {
   const desplazamiento = { "Smartphone A": -45,
     "Smartphone B": 0, "Tablet X": 45 };
   const burbujas = svg.selectAll("circle.burbuja")
-    .data(registros, d => `${d.producto}-${d.mes}`);
+    .data(registrosVisibles, d => `${d.producto}-${d.mes}`);
 
   // Conserva las burbujas existentes y anima las que entran, cambian o salen.
   burbujas.join(
@@ -98,10 +152,13 @@ function dibujarD3() {
   ).on("mouseover", function(event, d) {
     // Resalta el punto y presenta los detalles del registro seleccionado.
     d3.select(this).attr("stroke", "#172b43").attr("stroke-width", 2);
+    const variacion = d.variacion === null
+      ? "Sin mes anterior"
+      : `${d.variacion > 0 ? "+" : ""}${d.variacion}`;
     tooltip.style("opacity", 1)
       .html(`<strong>${d.producto}</strong><br>${d.mes}<br>` +
         `Ventas: ${d.ventas}<br>Ingresos: ${d.ingresos}<br>` +
-        `Precio: ${d.precio}`);
+        `Variación: ${variacion}<br>Precio: ${d.precio}`);
   }).on("mousemove", function(event) {
     tooltip.style("left", (event.pageX + 12) + "px")
       .style("top", (event.pageY - 25) + "px");
@@ -127,7 +184,7 @@ async function actualizar() {
   estado.textContent = "Actualizando datos…";
   try {
     await chartsListos;
-    registros = await cargarDatos();
+    registros = agregarVariaciones(await cargarDatos());
     dibujarGoogle();
     dibujarD3();
     estado.textContent = `Datos actualizados: ${registros.length} registros`;
